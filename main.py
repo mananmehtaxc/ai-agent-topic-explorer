@@ -3,7 +3,7 @@
 
 from duckduckgo_search import DDGS
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import OpenAI
+from langchain_openai import ChatOpenAI
 import requests
 import streamlit as st
 from bs4 import BeautifulSoup
@@ -66,7 +66,7 @@ def summarize_url(url,api_key,model):
     
     if model == "OpenAI":
         # Initialize OpenAi Model
-        llm = OpenAI(openai_api_key=api_key)
+        llm = ChatOpenAI(openai_api_key=api_key)
 
     # Generate the summary
     summary = llm.predict(f"Summarize the following text: {text}")
@@ -113,7 +113,7 @@ with st.form('myform', clear_on_submit=True):
 for index, summary in enumerate(summaries):
    st.info(f"""
            Summary for Title {urls[index]['title']}:
-           
+
            {summary}
            """)
    st.link_button(f"Source: {urls[index]['title']}", urls[index]['href'])
