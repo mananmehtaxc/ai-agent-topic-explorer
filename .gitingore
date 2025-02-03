@@ -1,0 +1,38 @@
+# Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environment directories
+venv/
+env/
+
+# .env file for storing sensitive data like API keys
+.env
+
+# Distribution/packaging
+build/
+dist/
+*.egg-info/
+
+# PyInstaller
+*.spec
+
+# VS Code settings
+.vscode/
+
+# IntelliJ IDEA settings
+.idea/
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Other IDEs or editors settings
+*.swp
