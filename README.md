@@ -36,4 +36,5 @@ cd your-project-name
 create `.env` file and install environment variables
 
 ### 7. Running Project
-`python main.py`
+# Project uses streamlit, run streamlit locally
+`streamlit run main.py`
