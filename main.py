@@ -17,7 +17,7 @@ import os
 #     raise ValueError("API_KEY is not set in the .env file.")
 
 # print("API Key:", api_key)
-
+@st.cache_data(show_spinner=False)
 def search_ddgs_and_store(query, num_results=3):
   """Searches DuckDuckGo and stores results in an array.
 
