@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
 import time
+from serpapi import GoogleSearch
 
 # # Load environment variables from .env file
 # load_dotenv()
@@ -19,8 +20,8 @@ import time
 
 # print("API Key:", api_key)
 @st.cache_data(show_spinner=False)
-def search_ddgs_and_store(query, num_results=3, max_retries=5):
-  """Searches DuckDuckGo and stores results in an array, with retry on rate limit.
+def search_query_and_store(query, num_results=3, max_retries=5,serpapi_apiKey=None):
+  """Searches using SerpAPI and stores results in an array, with retry on rate limit.
 
   Args:
     query: The search query.
@@ -30,25 +31,42 @@ def search_ddgs_and_store(query, num_results=3, max_retries=5):
   Returns:
     An array of search result dictionaries.
   """
+
   search_results = []
   retries = 0
+  # serpapi_api_key = os.getenv("SERPAPI_API_KEY")
+  if not serpapi_apiKey:
+    st.error("SERPAPI_API_KEY not set in environment variables.")
+    return []
+
   while retries < max_retries:
-      try:
-          results = DDGS().text(query, region='wt-wt', safesearch='Moderate', timelimit='y', max_results=num_results)
-          # Iterate through the results and extract relevant information
-          for i, result in enumerate(results):
-              search_results.append(result)
-          return search_results
-      except Exception as e:
-          if "Ratelimit" in str(e) or "DuckDuckGoSearchException" in str(e):
-              wait_time = 2 ** retries
-              print(f"Rate limited by DuckDuckGo. Retrying in {wait_time} seconds...")
-              time.sleep(wait_time)
-              retries += 1
-          else:
-              print(f"Error searching DuckDuckGo: {e}")
-              break
-  st.error("DuckDuckGo rate limit reached. Please try again later.")
+    try:
+      params = {
+        "q": query,
+        "num": num_results,
+        "api_key": serpapi_apiKey,
+        "engine": "google",
+      }
+      search = GoogleSearch(params)
+      results = search.get_dict()
+      organic_results = results.get("organic_results", [])
+      for result in organic_results[:num_results]:
+        # Each result is a dict with 'title' and 'link'
+        search_results.append({
+          "title": result.get("title", ""),
+          "href": result.get("link", "")
+        })
+      return search_results
+    except Exception as e:
+      if "rate limit" in str(e).lower():
+        wait_time = 2 ** retries
+        print(f"Rate limited by SerpAPI. Retrying in {wait_time} seconds...")
+        time.sleep(wait_time)
+        retries += 1
+      else:
+        print(f"Error searching SerpAPI: {e}")
+        break
+  st.error("SerpAPI rate limit reached or error occurred. Please try again later.")
   return []
 
 
@@ -102,9 +120,10 @@ st.title('🦜🔗 Topic Explorer App')
 
 # Query text
 topic = st.text_input('Enter your topic:', placeholder = 'Please provide a topic to explore')
-results_count = st.slider("Pick a number", 3, 10)
+results_count = st.slider("Pick a number", 3, 10, 3, help="Number of results to fetch fro search engine", disabled=not topic)
 use_model = st.selectbox("Pick one", ["Google Gemini", "OpenAI"])
-model_api_key = st.text_input('Model API Key:', type='password', disabled=not(topic))
+model_api_key = st.text_input('AI Model API Key:', type='password', disabled=not(topic))
+serpapi_api_key = st.text_input('SerpAPI API Key:', type='password', disabled=not(topic))
 
 # Example usage
 # topic = "What is the latest news on AI safety research?"
@@ -118,7 +137,8 @@ with st.form('myform', clear_on_submit=True):
    submitted = st.form_submit_button('Submit', disabled=not(topic and results_count))
    if submitted and model_api_key:
       with st.spinner("Searching..."):
-         urls = search_ddgs_and_store(topic,results_count)
+         urls = search_query_and_store(topic,results_count)
+         urls = search_query_and_store(topic, results_count, serpapi_api_key)
          for url in urls:
             summary = summarize_url(url['href'], model_api_key, use_model)
             if summary:
