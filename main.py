@@ -150,7 +150,7 @@ for index, summary in enumerate(summaries):
    st.info(f"""
            Summary for Title {urls[index]['title']}:
 
-           {summary}
+           {summary.content if hasattr(summary, 'content') else summary}
            """)
    st.link_button(f"Source: {urls[index]['title']}", urls[index]['href'])
 #    st.info(summary)
