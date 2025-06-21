@@ -20,7 +20,7 @@ from serpapi import GoogleSearch
 
 # print("API Key:", api_key)
 @st.cache_data(show_spinner=False)
-def search_query_and_store(query, num_results=3, max_retries=5,serpapi_apiKey=None):
+def search_query_and_store(query, serpapi_apiKey, num_results=3):
   """Searches using SerpAPI and stores results in an array, with retry on rate limit.
 
   Args:
@@ -39,7 +39,7 @@ def search_query_and_store(query, num_results=3, max_retries=5,serpapi_apiKey=No
     st.error("SERPAPI_API_KEY not set in environment variables.")
     return []
 
-  while retries < max_retries:
+  while retries < 5:
     try:
       params = {
         "q": query,
@@ -137,8 +137,8 @@ with st.form('myform', clear_on_submit=True):
    submitted = st.form_submit_button('Submit', disabled=not(topic and results_count))
    if submitted and model_api_key:
       with st.spinner("Searching..."):
-         urls = search_query_and_store(topic,results_count)
-         urls = search_query_and_store(topic, results_count, serpapi_api_key)
+        #  urls = search_query_and_store(topic,results_count)
+         urls = search_query_and_store(topic, serpapi_api_key, results_count)
          for url in urls:
             summary = summarize_url(url['href'], model_api_key, use_model)
             if summary:
