@@ -50,6 +50,8 @@ def summarize_url(url,api_key,model):
     A summary of the URL content.
   """
   try:
+    #mode name
+    modelname = "gemini-2.5-flash"
     # Fetch the content of the URL
     response = requests.get(url)
     response.raise_for_status()  # Raise an exception for bad status codes
@@ -62,14 +64,14 @@ def summarize_url(url,api_key,model):
 
     if model == "Google Gemini":
         # Initialize the Gemini model
-        llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=api_key)
+        llm = ChatGoogleGenerativeAI(model="modelname", google_api_key=api_key)
     
     if model == "OpenAI":
         # Initialize OpenAi Model
         llm = ChatOpenAI(openai_api_key=api_key)
 
     # Generate the summary
-    summary = llm.predict(f"Summarize the following text: {text}")
+    summary = llm.invoke(f"Summarize the following text: {text}")
 
     return summary
 
