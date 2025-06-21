@@ -20,7 +20,7 @@ from serpapi import GoogleSearch
 
 # print("API Key:", api_key)
 @st.cache_data(show_spinner=False)
-def search_query_and_store(query, serpapi_apiKey, num_results=3):
+def search_query_and_store(query, num_results=3):
   """Searches using SerpAPI and stores results in an array, with retry on rate limit.
 
   Args:
@@ -35,6 +35,7 @@ def search_query_and_store(query, serpapi_apiKey, num_results=3):
   search_results = []
   retries = 0
   # serpapi_api_key = os.getenv("SERPAPI_API_KEY")
+  serpapi_apiKey = st.secrets["api_keys"]["serpapikey"]
   if not serpapi_apiKey:
     st.error("SERPAPI_API_KEY not set in environment variables.")
     return []
@@ -123,7 +124,7 @@ topic = st.text_input('Enter your topic:', placeholder = 'Please provide a topic
 results_count = st.slider("Pick a number", 3, 10, 3, help="Number of results to fetch fro search engine", disabled=not topic)
 use_model = st.selectbox("Pick one", ["Google Gemini", "OpenAI"])
 model_api_key = st.text_input('AI Model API Key:', type='password', disabled=not(topic))
-serpapi_api_key = st.text_input('SerpAPI API Key:', type='password', disabled=not(topic))
+
 
 # Example usage
 # topic = "What is the latest news on AI safety research?"
@@ -138,7 +139,7 @@ with st.form('myform', clear_on_submit=True):
    if submitted and model_api_key:
       with st.spinner("Searching..."):
         #  urls = search_query_and_store(topic,results_count)
-         urls = search_query_and_store(topic, serpapi_api_key, results_count)
+         urls = search_query_and_store(topic, results_count)
          for url in urls:
             summary = summarize_url(url['href'], model_api_key, use_model)
             if summary:
