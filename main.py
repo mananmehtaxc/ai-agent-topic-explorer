@@ -19,24 +19,37 @@ import time
 
 # print("API Key:", api_key)
 @st.cache_data(show_spinner=False)
-def search_ddgs_and_store(query, num_results=3):
-  """Searches DuckDuckGo and stores results in an array.
+def search_ddgs_and_store(query, num_results=3, max_retries=5):
+  """Searches DuckDuckGo and stores results in an array, with retry on rate limit.
 
   Args:
     query: The search query.
     num_results: The maximum number of results to retrieve.
+    max_retries: Maximum number of retries on rate limit.
 
   Returns:
     An array of search result dictionaries.
   """
   search_results = []
-  results = DDGS().text(query, region='wt-wt', safesearch='Moderate', timelimit='y', max_results=num_results)  # fetch results from DDGS
-  time.sleep(5)  # Increase this if still rate-limited
-  # Iterate through the results and extract relevant information
-  for i,result in enumerate(results): # extract title, snippet, and URL
-        search_results.append(result)
-
-  return search_results
+  retries = 0
+  while retries < max_retries:
+      try:
+          results = DDGS().text(query, region='wt-wt', safesearch='Moderate', timelimit='y', max_results=num_results)
+          # Iterate through the results and extract relevant information
+          for i, result in enumerate(results):
+              search_results.append(result)
+          return search_results
+      except Exception as e:
+          if "Ratelimit" in str(e) or "DuckDuckGoSearchException" in str(e):
+              wait_time = 2 ** retries
+              print(f"Rate limited by DuckDuckGo. Retrying in {wait_time} seconds...")
+              time.sleep(wait_time)
+              retries += 1
+          else:
+              print(f"Error searching DuckDuckGo: {e}")
+              break
+  st.error("DuckDuckGo rate limit reached. Please try again later.")
+  return []
 
 
 
@@ -128,3 +141,4 @@ for index, summary in enumerate(summaries):
 #    print(f"Summary for Title {urls[index]['title']}: (Link:{urls[index]['href']})")
 #    print(summary)
 #    print("-" * 20)
+
