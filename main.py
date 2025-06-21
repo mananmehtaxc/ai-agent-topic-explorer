@@ -64,7 +64,7 @@ def summarize_url(url,api_key,model):
 
     if model == "Google Gemini":
         # Initialize the Gemini model
-        llm = ChatGoogleGenerativeAI(model="modelname", google_api_key=api_key)
+        llm = ChatGoogleGenerativeAI(model=modelname, google_api_key=api_key)
     
     if model == "OpenAI":
         # Initialize OpenAi Model
