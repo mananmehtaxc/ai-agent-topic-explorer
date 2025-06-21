@@ -18,7 +18,7 @@ import os
 
 # print("API Key:", api_key)
 
-def search_ddgs_and_store(query, num_results=10):
+def search_ddgs_and_store(query, num_results=3):
   """Searches DuckDuckGo and stores results in an array.
 
   Args:
