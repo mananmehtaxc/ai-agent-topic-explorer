@@ -9,6 +9,7 @@ import streamlit as st
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
+import time
 
 # # Load environment variables from .env file
 # load_dotenv()
@@ -30,7 +31,7 @@ def search_ddgs_and_store(query, num_results=3):
   """
   search_results = []
   results = DDGS().text(query, region='wt-wt', safesearch='Moderate', timelimit='y', max_results=num_results)  # fetch results from DDGS
-
+  time.sleep(5)  # Increase this if still rate-limited
   # Iterate through the results and extract relevant information
   for i,result in enumerate(results): # extract title, snippet, and URL
         search_results.append(result)
