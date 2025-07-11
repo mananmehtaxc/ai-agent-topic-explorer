@@ -1,3 +1,29 @@
+## Topic Explorer Agent
+
+The **Topic Explorer Agent** accepts a user-defined topic, uses **SerpAPI** to fetch the top relevant articles, and generates **concise summaries** using an LLM. Ideal for rapid research and content exploration.
+
+### 🔍 Features
+
+* Fetches 3 relevant articles for any topic
+* Summarizes article content using Generative AI
+* Outputs clean, easy-to-read summaries for fast insights
+
+### 🛠️ Tech Stack
+
+* Python · SerpAPI · LangChain · Gemini AI or Hugging Face LLMs
+
+### 🚀 How It Works
+
+1. Enter a topic
+2. Agent queries SerpAPI for top results
+3. Scrapes and summarizes content using an LLM
+4. Returns a clean summary list
+
+---
+
+Let me know if you'd like a code usage example or Streamlit UI notes added!
+
+
 # Python Project Setup
 
 ## Description
